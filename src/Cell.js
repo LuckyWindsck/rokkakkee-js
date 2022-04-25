@@ -1,6 +1,6 @@
 const ansicolor = require('ansicolor');
 
-const { color: { player: playerColor } } = require('./setting');
+const { color: { player: playerColor }, debug } = require('./setting');
 
 module.exports = class Cell {
   constructor({ owner, enterable, value }) {
@@ -12,14 +12,27 @@ module.exports = class Cell {
   toString() {
     const color = ansicolor[playerColor[this.owner]];
 
-    let displayString = '';
-
-    if (this.owner === 'neutral') {
-      displayString = this.enterable ? '-' : ' ';
-    } else {
-      displayString = this.value === null ? '*' : String(this.value);
+    // Unoccupied Cell
+    if (this.enterable && this.owner === 'neutral') {
+      return color('-');
     }
 
-    return color(displayString);
+    // Occupied Cell
+    if (this.enterable && this.owner !== 'neutral') {
+      return color(String(this.value));
+    }
+
+    // Empty Cell
+    if (!this.enterable && this.owner === 'neutral') {
+      return debug ? ansicolor.dim('-') : ' ';
+    }
+
+    // Respawn Cell
+    if (!this.enterable && this.owner !== 'neutral') {
+      return color('*');
+    }
+
+    // Code should not reach here, just for surpressing the warning of eslint(consistent-return)
+    throw Error('Unexpected cell state');
   }
 };
