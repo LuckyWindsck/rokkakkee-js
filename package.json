@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "ansicolor": "^1.1.100"
+    "ansicolor": "^1.1.100",
+    "keypress": "^0.2.1"
   },
   "devDependencies": {
     "eslint": "^8.14.0",
