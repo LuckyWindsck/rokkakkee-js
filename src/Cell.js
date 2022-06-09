@@ -1,6 +1,6 @@
 const ansicolor = require('ansicolor');
 
-const { color: { player: playerColor }, debug } = require('./setting');
+const { color: { player: playerColor }, debug } = require('../setting');
 
 module.exports = class Cell {
   constructor({ game, pos, state }) {

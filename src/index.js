@@ -1,6 +1,4 @@
 const Game = require('./Game');
-const map = require('./map');
-
-const game = new Game({ map });
+const map = require('../data/map');
 
 module.exports = new Game({ map });

@@ -13,10 +13,11 @@ const {
     lowerLeft,
     lowerRight,
   },
-} = require('./constants');
-const { color, defaultDirection, moveVersion } = require('./setting');
-const { [moveVersion]: move } = require('./move');
-const { spaces } = require('./util');
+} = require('./util/constants');
+const { color, defaultDirection, moveVersion } = require('../setting');
+const { [moveVersion]: move } = require('./util/move');
+
+const spaces = (num) => ' '.repeat(num);
 
 const selectionString = [
   '  0 1',

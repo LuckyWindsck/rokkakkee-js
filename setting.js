@@ -1,4 +1,4 @@
-const { directions: { left } } = require('./constants');
+const { directions } = require('./src/util/constants');
 
 module.exports = {
   color: {
@@ -9,6 +9,6 @@ module.exports = {
     },
   },
   debug: false,
-  defaultDirection: left,
+  defaultDirection: directions.left,
   moveVersion: 'ver2',
 };
