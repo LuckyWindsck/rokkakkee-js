@@ -1,7 +1,8 @@
 const ansicolor = require('ansicolor');
 const keypress = require('keypress');
 
-const GameBoard = require('./GameBoard');
+const Cell = require('./Cell');
+const Player = require('./Player');
 
 const {
   directions: {
@@ -15,8 +16,7 @@ const {
 } = require('./constants');
 const { color, defaultDirection, moveVersion } = require('./setting');
 const { [moveVersion]: move } = require('./move');
-
-const selectedDirectionColor = ansicolor[color.direction.selected];
+const { spaces } = require('./util');
 
 const selectionString = [
   '  0 1',
@@ -28,28 +28,123 @@ const selectionString = [
 const keypressEvent = (game) => (_ch, key) => {
   if (key?.ctrl && key?.name === 'c') {
     process.stdin.pause();
+
+    return;
   }
 
   if (['left', 'right', 'up', 'down'].includes(key.name)) {
     game.selectDirection(move[game.selectedDirection][key.name]);
     game.render();
+
+    return;
   }
 
-  if (key.name === 'return') {
-    console.log(game.selectedDirection);
+  if (['space', 'return'].includes(key.name)) {
+    const [row, col] = game.currentPlayer.pos;
+
+    const originalCell = game.gameBoard[row][col];
+    let targetCell;
+
+    switch (game.selectedDirection) {
+      case upperLeft:
+        targetCell = game.gameBoard[row - 1]?.[col + (row % 2 ? -1 : 0)];
+        break;
+      case upperRight:
+        targetCell = game.gameBoard[row - 1]?.[col + (row % 2 ? 0 : 1)];
+        break;
+      case left:
+        targetCell = game.gameBoard[row]?.[col - 1];
+        break;
+      case right:
+        targetCell = game.gameBoard[row]?.[col + 1];
+        break;
+      case lowerLeft:
+        targetCell = game.gameBoard[row + 1]?.[col + (row % 2 ? -1 : 0)];
+        break;
+      case lowerRight:
+        targetCell = game.gameBoard[row + 1]?.[col + (row % 2 ? 0 : 1)];
+        break;
+      default:
+        break;
+    }
+
+    const canMove = targetCell?.enterable === true;
+
+    if (!canMove) {
+      game.render();
+      console.log(`${game.selectedDirection} 方向に移動できません。`);
+      return;
+    }
+
+    game.currentPlayer.move(originalCell, targetCell);
+    const gameEnd = game.gameBoard.flat().every((cell) => cell.value !== 0);
+
+    if (gameEnd) {
+      const playerAcells = game.gameBoard.flat().filter((cell) => cell.owner === 'playerA').length;
+      const playerBcells = game.gameBoard.flat().filter((cell) => cell.owner === 'playerB').length;
+
+      console.clear();
+      game.showGameBoard();
+      console.log();
+
+      if (playerAcells > playerBcells) {
+        console.log(ansicolor[color.player.playerA]('* の勝ち'));
+      } else if (playerAcells < playerBcells) {
+        console.log(ansicolor[color.player.playerB]('* の勝ち'));
+      } else {
+        console.log('引き分け');
+      }
+
+      process.exit();
+    }
+
+    game.nextTurn();
+    game.render();
   }
 };
 
 module.exports = class Game {
   constructor({ map }) {
-    this.gameBoard = new GameBoard(map);
+    this.neutral = new Player(0);
+    this.playerA = new Player(1);
+    this.playerB = new Player(2);
+
+    this.players = {
+      neutral: this.neutral,
+      playerA: this.playerA,
+      playerB: this.playerB,
+    };
+
+    this.gameBoard = map.map((row, rowIdx) => row.map((col, colIdx) => {
+      const pos = [rowIdx, colIdx];
+      const state = col;
+      const cell = new Cell({ game: this, pos, state });
+
+      if (state === 1) {
+        this.playerA.setRespawn(cell);
+        this.playerA.respawn();
+      }
+
+      if (state === 2) {
+        this.playerB.setRespawn(cell);
+        this.playerB.respawn();
+      }
+
+      return cell;
+    }));
+
+    this.currentPlayer = this.playerB;
     this.selectedDirection = defaultDirection;
     this.promptFirstTime = true;
   }
 
+  get currentPlayerColor() {
+    return color.player[this.currentPlayer.name];
+  }
+
   get promptMessage() {
-    const questionMark = ansicolor.green('?');
-    const message = '移動する方向を選んでください';
+    const questionMark = ansicolor.cyan('?');
+    const message = ansicolor[this.currentPlayerColor]('移動する方向を選んでください');
     const hintMessage = this.promptFirstTime ? ansicolor.dim(' (矢印キーで選択)') : '';
 
     return `${questionMark} ${message}${hintMessage}`;
@@ -66,12 +161,23 @@ module.exports = class Game {
     process.stdin.resume();
   }
 
+  showGameBoard() {
+    console.log(
+      this.gameBoard.map((row, rowIdx) => {
+        const padStart = rowIdx % 2 ? '' : spaces(3);
+        const rowString = row.map((col, _colIdx) => col.toString()).join(spaces(5));
+
+        return padStart + rowString;
+      }).join('\n'.repeat(2)),
+    );
+  }
+
   prompt() {
     console.log(this.promptMessage);
     console.log();
     console.log(selectionString.replace(
       this.selectedDirection,
-      selectedDirectionColor(this.selectedDirection),
+      ansicolor[this.currentPlayerColor](this.selectedDirection),
     ));
     console.log();
 
@@ -80,9 +186,13 @@ module.exports = class Game {
 
   render() {
     console.clear();
-    console.log(this.gameBoard.toString());
+    this.showGameBoard();
     console.log();
     this.prompt();
+  }
+
+  nextTurn() {
+    this.currentPlayer = this.currentPlayer === this.playerA ? this.playerB : this.playerA;
   }
 
   start() {

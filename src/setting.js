@@ -4,11 +4,8 @@ module.exports = {
   color: {
     player: {
       neutral: 'white',
-      playerA: 'green',
-      playerB: 'magenta',
-    },
-    direction: {
-      selected: 'red',
+      playerA: 'magenta',
+      playerB: 'green',
     },
   },
   debug: false,
