@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+const { Command } = require('commander');
+const Rokkakkee = require('../src/index');
+
+const program = new Command();
+
+program
+  .name('rokkakkee')
+  .description('CLI version of the browser game rokkakkee (ロッカッケー)')
+  .version('0.0.1')
+  .option('-r, --rule', 'show the rules of rokkakkee');
+
+program.parse();
+
+const options = program.opts();
+
+if (options.rule) {
+  Rokkakkee.showRule();
+  process.exit();
+}
+
+Rokkakkee.start();

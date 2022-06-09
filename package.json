@@ -1,10 +1,11 @@
 {
   "name": "rokkakkee-js",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "bin/rokkakkee",
   "license": "MIT",
   "dependencies": {
     "ansicolor": "^1.1.100",
+    "commander": "^9.3.0",
     "keypress": "^0.2.1"
   },
   "devDependencies": {

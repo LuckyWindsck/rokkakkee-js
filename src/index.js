@@ -3,4 +3,4 @@ const map = require('./map');
 
 const game = new Game({ map });
 
-game.start();
+module.exports = new Game({ map });

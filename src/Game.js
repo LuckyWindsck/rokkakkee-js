@@ -136,6 +136,20 @@ module.exports = class Game {
     this.currentPlayer = this.playerB;
     this.selectedDirection = defaultDirection;
     this.promptFirstTime = true;
+
+    this.rule = `陣取り合戦 ロッカッケー のあぞびかた（ブラウザー版）
+
+1. 緑と紫が交互に進んで戦うよ！
+
+2. マスの数字 1 は 防御力！
+    自陣なら通過すると +1
+    敵陣なら攻撃すると -1
+    0 まで減ると 白に戻る！
+
+3. 本体を直接攻撃されるとポータルに戻される！
+
+4. マスが全て埋まったとき
+    自陣のマスが多いほうの勝ち！`;
   }
 
   get currentPlayerColor() {
@@ -193,6 +207,10 @@ module.exports = class Game {
 
   nextTurn() {
     this.currentPlayer = this.currentPlayer === this.playerA ? this.playerB : this.playerA;
+  }
+
+  showRule() {
+    console.log(this.rule);
   }
 
   start() {
