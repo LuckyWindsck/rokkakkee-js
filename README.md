@@ -1,6 +1,6 @@
 # rokkakkee-js
 
-[陣取り合戦 - ロッカッケー](https://rokkakkee.netlify.app/) の CLI 版（作成中）
+[陣取り合戦 - ロッカッケー](https://rokkakkee.netlify.app/) の CLI 版
 
 ## ルール（ブラウザー版）
 
