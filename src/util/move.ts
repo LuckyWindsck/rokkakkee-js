@@ -1,15 +1,10 @@
-const {
-  directions: {
-    upperLeft,
-    upperRight,
-    left,
-    right,
-    lowerLeft,
-    lowerRight,
-  },
-} = require('./constants');
+import { directions } from './constants';
 
-const moveVer1 = {
+const {
+  upperLeft, upperRight, left, right, lowerLeft, lowerRight,
+} = directions;
+
+const ver1 = {
   [upperLeft]: {
     left,
     right: upperRight,
@@ -48,7 +43,7 @@ const moveVer1 = {
   },
 };
 
-const moveVer2 = {
+const ver2 = {
   [upperLeft]: {
     left,
     right: upperRight,
@@ -87,7 +82,7 @@ const moveVer2 = {
   },
 };
 
-module.exports = {
-  ver1: moveVer1,
-  ver2: moveVer2,
+export default {
+  ver1,
+  ver2,
 };

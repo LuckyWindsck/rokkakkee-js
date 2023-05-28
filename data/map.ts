@@ -7,35 +7,14 @@
 // * 1 - respawn cell of player 1
 // * 2 - respawn cell of player 2
 
-module.exports = [
-  [
-    null,
-    1,
-    null,
-    null,
-  ],
-  [
-    0,
-    0,
-    0,
-    0,
-  ],
-  [
-    0,
-    0,
-    0,
-    null,
-  ],
-  [
-    0,
-    0,
-    0,
-    0,
-  ],
-  [
-    null,
-    2,
-    null,
-    null,
-  ],
+import type { MapData } from '../src/types';
+
+const map: MapData = [
+  [null, 1, null, null],
+  [0, 0, 0, 0],
+  [0, 0, 0, null],
+  [0, 0, 0, 0],
+  [null, 2, null, null],
 ];
+
+export default map;

@@ -3,14 +3,24 @@
   "version": "1.0.0",
   "main": "bin/rokkakkee",
   "license": "MIT",
+  "description": "CLI version of the browser game rokkakkee (ロッカッケー)",
+  "scripts": {
+    "build": "rm -rf ./dist && tsc",
+    "lint": "eslint --ext=ts src",
+    "lint:fix": "yarn lint --fix"
+  },
   "dependencies": {
     "ansicolor": "^1.1.100",
     "commander": "^9.3.0",
     "keypress": "^0.2.1"
   },
   "devDependencies": {
+    "@types/node": "^17.0.41",
+    "@typescript-eslint/eslint-plugin": "^5.27.1",
+    "@typescript-eslint/parser": "^5.27.1",
     "eslint": "^8.14.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.26.0"
+    "eslint-plugin-import": "^2.26.0",
+    "typescript": "^4.7.3"
   }
 }

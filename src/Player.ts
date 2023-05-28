@@ -1,21 +1,34 @@
-module.exports = class Player {
-  constructor(id) {
+import type Cell from './Cell';
+import type { Position, ValidPlayer, ValidPlayerId } from './types';
+
+export default class Player {
+  id: ValidPlayerId;
+
+  name: ValidPlayer;
+
+  pos: [undefined, undefined] | Position;
+
+  respawnCell: undefined | Cell;
+
+  constructor(id: ValidPlayerId) {
     this.id = id;
-    this.name = ['neutral', 'playerA', 'playerB'][id];
+    this.name = ['neutral', 'playerA', 'playerB'][id] as ValidPlayer;
     this.pos = [undefined, undefined];
     this.respawnCell = undefined;
   }
 
-  setRespawn(cell) {
+  setRespawn(cell: Cell) {
     this.respawnCell = cell;
   }
 
   respawn() {
+    if (!this.respawnCell) throw Error('Logical Error');
+
     this.pos = this.respawnCell.pos;
     this.respawnCell.playerOnCell = true;
   }
 
-  move(originalCell, targetCell) {
+  move(originalCell: Cell, targetCell: Cell) {
     if (targetCell.owner === 'neutral' || targetCell.owner === this.name) {
       originalCell.playerLeave();
       this.pos = targetCell.pos;
@@ -32,4 +45,4 @@ module.exports = class Player {
 
     targetCell.playerAttack();
   }
-};
+}

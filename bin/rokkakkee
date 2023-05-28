@@ -1,6 +1,7 @@
 #!/usr/bin/env node
+/* eslint-disable import/order */
 const { Command } = require('commander');
-const Rokkakkee = require('../src/index');
+const Rokkakkee = require('../dist/src/index').default;
 
 const program = new Command();
 

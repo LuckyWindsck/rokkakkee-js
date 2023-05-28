@@ -1,9 +1,31 @@
-const ansicolor = require('ansicolor');
+import ansicolor from 'ansicolor';
 
-const { color: { player: playerColor }, debug } = require('../setting');
+import { color, debug } from '../setting';
 
-module.exports = class Cell {
-  constructor({ game, pos, state }) {
+import type Game from './Game';
+import type Player from './Player';
+import type { CellData, Position, ValidPlayer } from './types';
+
+const { player: playerColor } = color;
+
+interface CellOptions {
+  game: Game;
+  pos: Position;
+  state: CellData;
+}
+
+export default class Cell {
+  game: Game;
+
+  pos: Position;
+
+  owner: ValidPlayer;
+
+  value: null | number;
+
+  playerOnCell: boolean;
+
+  constructor({ game, pos, state }: CellOptions) {
     this.game = game;
     this.pos = pos;
 
@@ -41,7 +63,7 @@ module.exports = class Cell {
     return this.value !== null;
   }
 
-  playerInvade(player) {
+  playerInvade(player: Player) {
     this.game.players[this.owner].respawn();
     this.owner = player.name;
     this.value = 1;
@@ -49,13 +71,16 @@ module.exports = class Cell {
   }
 
   playerAttack() {
+    if (this.value === null) throw Error('Logical Error');
+
     this.value -= 1;
 
     if (this.value === 0) this.owner = 'neutral';
   }
 
-  playerCome(player) {
+  playerCome(player: Player) {
     this.owner = player.name;
+    if (this.value === null) throw Error('Logical Error');
     this.value += 1;
     if (this.value === 10) this.value = 9;
     this.playerOnCell = true;
@@ -66,33 +91,29 @@ module.exports = class Cell {
   }
 
   toString() {
-    let color;
-    let character;
+    let cellColor: (text: string|number|null|undefined) => string;
+    let character: string;
 
-    // Unoccupied Cell
     if (this.enterable && this.owner === 'neutral') {
-      color = ansicolor[playerColor[this.owner]];
+      // Unoccupied Cell
+      cellColor = ansicolor[playerColor[this.owner]];
       character = '-';
-    }
-
-    // Occupied Cell
-    if (this.enterable && this.owner !== 'neutral') {
-      color = ansicolor[playerColor[this.owner]];
+    } else if (this.enterable && this.owner !== 'neutral') {
+      // Occupied Cell
+      cellColor = ansicolor[playerColor[this.owner]];
       character = this.playerOnCell ? '*' : String(this.value);
-    }
-
-    // Empty Cell
-    if (!this.enterable && this.owner === 'neutral') {
-      color = ansicolor.dim;
+    } else if (!this.enterable && this.owner === 'neutral') {
+      // Empty Cell
+      cellColor = ansicolor.dim;
       character = debug ? '-' : ' ';
-    }
-
-    // Respawn Cell
-    if (!this.enterable && this.owner !== 'neutral') {
-      color = (text) => ansicolor.inverse(ansicolor[playerColor[this.owner]](text));
+    } else if (!this.enterable && this.owner !== 'neutral') {
+      // Respawn Cell
+      cellColor = (text) => ansicolor.inverse(ansicolor[playerColor[this.owner]](text));
       character = this.playerOnCell ? '*' : '-';
+    } else {
+      throw Error('Logical Error');
     }
 
-    return color(character);
+    return cellColor(character);
   }
-};
+}
