@@ -14,3 +14,12 @@
 3. 本体を直接攻撃されるとポータルに戻される！
 4. マスが全て埋まったとき
    自陣のマスが多いほうの勝ち！
+
+## 使い方
+
+```shell
+$ yarn
+$ yarn build
+$ ./bin/rokkakkee --rule
+$ ./bin/rokkakkee
+```
